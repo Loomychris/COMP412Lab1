@@ -142,6 +142,94 @@ class Parser:
         elif len(error) > 0:
             self.errors.append(error)
         return -1
+
+    def processOutput(self, line, position, lineNum):
+        error = ''
+        extra = False
+        if line[position][0] == 3:
+            position += 1
+            if line[position][0] == 5:
+                position += 1
+                if line[position][0] == 10:
+                    position += 1
+                    inter = Intermediate(
+                        line = lineNum
+                        opcode = line[position -3][1],
+                        op1 = [line[position-2][1], -1, -1, -1],
+                    )
+                    self.addIntermediate(inter)
+                    self.operations += 1
+                    return position
+                else: 
+                    error = 'ERROR %d: extra token at end of line "%s"' % (lineNum, line[position][1])
+                    extra = True
+            else:
+                error = 'ERROR %d: missing constant in output' % (lineNum)
+        if line[position][0] == 11:
+            self.errors.append('ERROR %d: %s' % (lineNum, line[position][1]))
+        elif len(error) > 0:
+            self.errors.append(error)
+        return -1
     
     def processNop(self, line, position, lineNum):
-        
+        error = ''
+        extra = False
+        if line[position][0] == 4:
+            position += 1
+            if line[position][0] == 10:
+                position += 1
+                inter = Intermediate(
+                    line = lineNum
+                    opcode = line[position -2][1],
+                )
+                self.addIntermediate(inter)
+                self.operations += 1
+                return position
+            else: 
+                error = 'ERROR %d: extra token at end of line "%s"' % (lineNum, line[position][1])
+                extra = True
+        if line[position][0] == 11:
+            self.errors.append('ERROR %d: %s' % (lineNum, line[position][1]))
+        elif len(error) > 0:
+            self.errors.append(error)
+        return -1
+    
+    def processEof(self, line, position, lineNum):
+        if line[position][0] == 9:
+            position += 1
+            return position
+        return -1
+
+    def parse(self):
+        line = 0
+        for lst in self.input:
+            position = 0
+            if len(lst) == 0:
+                continue
+            while position < len(lst):
+                if position > 0:
+                    self.errors.append('ERROR %d: extra token at end of line"%s"' % (line + 1, line[position][1]))
+                    break
+                if lst[position][0] == 0: #MEMOP
+                    position = self.processMemOp(lst, position, line + 1)
+                elif lst[position][0] == 1: #LOADI
+                    position = self.processLoadI(lst, position, line + 1)
+                elif lst[position][0] == 2: #ARITHOP
+                    position = self.processArithOp(lst, position, line + 1)
+                elif lst[position][0] == 3: #OUTPUT
+                    position = self.processOutput(lst, position, line + 1)
+                elif lst[position][0] == 4: #NOP
+                    position = self.processNop(lst, position, line + 1)
+                elif lst[position][0] == 9: #EOF
+                    position = self.processEof(lst, position, line + 1)
+                elif lst[position][0] == 10: #EOL
+                    break
+                elif lst[position][0] == 11: #ERROR
+                    self.errors.append('ERROR %d: %s' % (line + 1, lst[position][1]))
+                    break
+                if position == -1:
+                    break
+            line += 1
+        if len(self.errors) == 0:
+            return 0
+        return 1
