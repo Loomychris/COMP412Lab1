@@ -20,7 +20,7 @@ class Parser:
         else: 
             self.current.next = newItem
             newItem.prev = self.current
-            self.current = new newItem
+            self.current = newItem
     
     def processMemOp(self, line, position, lineNum):
         error = '' 
@@ -153,7 +153,7 @@ class Parser:
                 if line[position][0] == 10:
                     position += 1
                     inter = Intermediate(
-                        line = lineNum
+                        line = lineNum,
                         opcode = line[position -3][1],
                         op1 = [line[position-2][1], -1, -1, -1],
                     )
@@ -179,7 +179,7 @@ class Parser:
             if line[position][0] == 10:
                 position += 1
                 inter = Intermediate(
-                    line = lineNum
+                    line = lineNum,
                     opcode = line[position -2][1],
                 )
                 self.addIntermediate(inter)

@@ -7,30 +7,33 @@ class Scanner:
         self.input = input
     
     def s(self, line, position, tokens, length) -> int:
-        s = 's'
-        position += 1
-        if position < length and line[position] == 't':
+      s = 's'
+      position += 1
+      if position < length and line[position] == 't':
+         position += 1
+         s += 't'
+         if position < length and line[position] == 'o':
             position += 1
-            s += 't'
-            if position < length and line[position] == 'o':
-                position += 1
-                s += 'o'
-                if position < length and line[position] == 'e':
-                    s += 'e'
-                    tokens.append((0, 'store'))
-                    return position + 1
-        elif position < length and line[position] == 'u':
-            position += 1
-            s += 'u'
-            if position < length and line[position] == 'b':
-                s += 'b'
-                tokens.append((2, 'sub'))
-                return position + 1
-        self.error = True
-        if position < length:
-            s += line[position]
-        tokens.append((11, '\'%s\' is not a vaid word' % (s)))
-        return length -1
+            s += 'o'
+            if position < length and line[position] == 'r':
+               position += 1
+               s += 'r'
+               if position < length and line[position] == 'e':
+                  s += 'e'
+                  tokens.append((0, 'store'))
+                  return position + 1
+      elif position < length and line[position] == 'u':
+         position += 1
+         s += 'u'
+         if position < length and line[position] == 'b':
+            s += 'b'
+            tokens.append((2, 'sub'))
+            return position + 1
+      self.error = True
+      if position < length:
+         s += line[position]
+      tokens.append((11, '\'%s\' is not a valid word' % (s)))
+      return length - 1
     
     def l(self, line, position, tokens, length) -> int:
         s = 'l'
@@ -76,7 +79,7 @@ class Scanner:
     def r(self, line, position, tokens, length) -> int:
         s = 'r'
         position += 1
-        if position < length and line[position] == '0' and line[position] <= '9':
+        if position < length and line[position] >= '0' and line[position] <= '9':
                 while position < length and line[position] >= '0' and line[position] <= '9':
                     s += line[position]
                     position += 1
@@ -101,7 +104,7 @@ class Scanner:
         self.error = True
         if position < length:
             s += line[position]
-        tokens.append((11, '\'%s\' is not a vaid word' % (s)))
+        tokens.append((11, '\'%s\' is not a valid word' % (s)))
         return length -1
     
     def m(self, line, position, tokens, length) -> int:
@@ -113,14 +116,14 @@ class Scanner:
             if position < length and line[position] == 'l':
                 s += 'l'
                 position += 1
-                if position < length and line[position] = 't':
+                if position < length and line[position] == 't':
                     s += 't'
                     tokens.append((2, 'mult'))
                     return position + 1
         self.error = True
         if position < length:
             s += line[position]
-        tokens.append((11, '\'%s\' is not a vaid word' % (s)))
+        tokens.append((11, '\'%s\' is not a valid word' % (s)))
         return length -1
     
     def a(self, line, position, tokens, length) -> int:
@@ -136,7 +139,7 @@ class Scanner:
         self.error = True
         if position < length:
             s += line[position]
-        tokens.append((11, '\'%s\' is not a vaid word' % (s)))
+        tokens.append((11, '\'%s\' is not a valid word' % (s)))
         return length -1
     
     def n(self, line, position, tokens, length) -> int:
@@ -152,7 +155,7 @@ class Scanner:
         self.error = True
         if position < length:
             s += line[position]
-        tokens.append((11, '\'%s\' is not a vaid word' % (s)))
+        tokens.append((11, '\'%s\' is not a valid word' % (s)))
         return length -1
     
     def o(self, line, position, tokens, length) -> int:
@@ -173,12 +176,12 @@ class Scanner:
                         if position < length and line[position] == 't':
                             s += 't'
                             tokens.append((3, 'output'))
-                            return position + 1
+                        return position + 1
         self.error = True
+        s += line[position]
         if position < length:
-            s += line[position]
-        tokens.append((11, '\'%s\' is not a vaid word' % (s)))
-        return length -1
+            tokens.append((11, '\'%s\' is not a valid word' % (s)))
+        return length - 1
     
     def into(self, line, position, tokens, length) -> int:
         s = '='
@@ -190,7 +193,7 @@ class Scanner:
         self.error = True
         if position < length:
             s += line[position]
-        tokens.append((11, '\'%s\' is not a vaid word' % (s)))
+        tokens.append((11, '\'%s\' is not a valid word' % (s)))
         return length -1
 
     def comma(self, line, position, tokens, length) -> int:
@@ -200,7 +203,7 @@ class Scanner:
         self.error = True
         if position < length:
             s += line[position]
-        tokens.append((11, '\'%s\' is not a vaid word' % (s)))
+        tokens.append((11, '\'%s\' is not a valid word' % (s)))
         return length -1
 
     def newline(self, line, position, tokens, length) -> int:
@@ -210,7 +213,7 @@ class Scanner:
         self.error = True
         if position < length:
             s += line[position]
-        tokens.append((11, '\'%s\' is not a vaid word' % (s)))
+        tokens.append((11, '\'%s\' is not a valid word' % (s)))
         return length -1
     
     def comment(self, line, position, tokens, length) -> int:
@@ -222,7 +225,7 @@ class Scanner:
         self.error = True
         if position < length:
             s += line[position]
-        tokens.append((11, '\'%s\' is not a vaid word' % (s)))
+        tokens.append((11, '\'%s\' is not a valid word' % (s)))
         return length - 1
     
     def constant(self, line, position, tokens, length) -> int:
@@ -274,7 +277,7 @@ class Scanner:
                     position = self.s(line, position, tokens, length)
                     op = True
                 elif line[position] == 'l':
-                    position = self.(line, position, tokens, length)
+                    position = self.l(line, position, tokens, length)
                     op = True
                 elif line[position] == 'r':
                     position = self.r(line, position, tokens, length)
