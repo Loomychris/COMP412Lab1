@@ -146,7 +146,7 @@ class Scanner:
         s = 'n'
         position += 1
         if position < length and line[position] == 'o':
-            s += 'd'
+            s += 'o'
             position += 1
             if position < length and line[position] == 'p':
                 s += 'p'
@@ -240,7 +240,6 @@ class Scanner:
     def parse(self) -> List[List[Tuple]]:
         result = []
         inputfile = open(self.input, 'r')
-        tokens = []
         while True:
             line = inputfile.readline()
             if not line:
@@ -314,8 +313,11 @@ class Scanner:
                     else: 
                         tokens.append((11, '\'%s\' is not a valid word' % (line[position])))
                         position = length - 1
-                result.append(tokens)
-            if len(tokens) == 0 or tokens[-1][0] != 10:
-                tokens.append((10, '\n'))
-            result.append([(9, '')])
-            return result
+            result.append(tokens)
+
+        if len(tokens) == 0 or tokens[-1][0] != 10:
+            tokens.append((10, '\n'))
+        result.append([(9, '')])
+        return result
+
+
